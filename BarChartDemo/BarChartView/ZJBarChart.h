@@ -10,17 +10,15 @@
 
 @interface ZJBarChart : UIView
 /** 柱状图数据源 */
-@property(nonatomic,strong)NSArray<NSNumber *> *numberData;
+@property(nonatomic,strong)NSArray<NSNumber *> *yLabels;
 /** 图格说明 */
-@property(nonatomic,strong)NSArray<NSString *> *labels;
+@property(nonatomic,strong)NSArray<NSString *> *xLabels;
 /** 图格颜色 默认红色*/
 @property(nonatomic)NSArray<UIColor *> *barColors;
 
 
 /** 图格背景颜色 */
 @property (nonatomic)UIColor *barBackgroundColor;
-/** 最大值 默认为数据源中的最大值*/
-@property(nonatomic,assign)CGFloat  maxValue;
 
 /** 图柱宽 默认20*/
 @property(nonatomic,assign)CGFloat barWidth;

@@ -7,6 +7,9 @@
 //
 
 #import "ZJBarChart.h"
+static CGFloat const kMinRatio = 0.9;
+static CGFloat const kMaxRatio = 1.1;
+
 @interface ZJBarChart()
 {
     ///最小间隔
@@ -18,6 +21,11 @@
     ///到底部的距离
     CGFloat _bottomSpacing;
 }
+/**元数据 最大值*/
+@property(nonatomic,assign)CGFloat  maxValue;
+/**元数据 最小值*/
+@property(nonatomic,assign)CGFloat  minValue;
+
 @end
 
 @implementation ZJBarChart
@@ -48,10 +56,14 @@
     [super drawRect:rect];
     
     //获取数据最大值
-    CGFloat metaMaxValue = [[self.numberData valueForKeyPath:@"@max.self"] floatValue];
-    self.maxValue = self.maxValue > metaMaxValue ? self.maxValue: metaMaxValue;
+    CGFloat metaMaxValue = [[self.yLabels valueForKeyPath:@"@max.self"] floatValue];
+    self.maxValue = metaMaxValue * kMaxRatio;
+    //获取数据最小值
+    CGFloat metaMinValue = [[self.yLabels valueForKeyPath:@"@min.self"] floatValue];
+    self.minValue = metaMinValue * kMinRatio;
+    
     //检查间隔合理值
-    CGFloat barSpacing = (CGRectGetWidth(rect) - _leftSpacing - _rightSpacing - _barWidth * self.numberData.count)/(self.numberData.count + 1);
+    CGFloat barSpacing = (CGRectGetWidth(rect) - _leftSpacing - _rightSpacing - _barWidth * self.yLabels.count)/(self.yLabels.count + 1);
     self.barSpacing = self.barSpacing >= barSpacing ? self.barSpacing : barSpacing;
     
     CGFloat viewMaxHeight = CGRectGetHeight(rect);
@@ -107,10 +119,14 @@
     
     //设置等分数量
     CGFloat cout = 5.0;
+    CGFloat Dvalue = self.maxValue - self.minValue;
+    if (Dvalue) {
+        Dvalue = self.maxValue;
+    }
     for (NSInteger j = 0; j < cout; j ++) {
         UIFont *font = [UIFont systemFontOfSize:13.0];
-        CGFloat grade = self.maxValue * (1.0 - j/cout);
-        NSString *gradeString = [NSString stringWithFormat:@"%.2f",grade];
+        CGFloat grade = Dvalue * j / cout;
+        NSString *gradeString = [NSString stringWithFormat:@"%.2f",self.maxValue - grade];
         
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -150,10 +166,10 @@
  @param barMaxHeight 柱图的最大高度（视图总高 - 底部文字的高度）
  */
 -(void)drawBottomTextBarHeight:(CGFloat)barMaxHeight{
-    if (self.labels) {
+    if (self.xLabels) {
         UIFont *font = [UIFont systemFontOfSize:13.0];
         
-        [self.labels enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.xLabels enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
             NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
             paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -174,8 +190,8 @@
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    for (NSInteger k = 0; k < self.numberData.count; k++) {
-        CGFloat barHeight = barMaxHeight * [self.numberData[k] floatValue] / self.maxValue;
+    for (NSInteger k = 0; k < self.yLabels.count; k++) {
+        CGFloat barHeight = barMaxHeight * [self.yLabels[k] floatValue] / self.maxValue;
         barHeight = barHeight > 0.5 ? barHeight : 0.5;
         
         CGFloat x = _leftSpacing + _barSpacing + k * (_barWidth + _barSpacing);
@@ -195,13 +211,13 @@
 }
 
 #pragma mark Setter
--(void)setNumberData:(NSArray<NSNumber *> *)numberData{
-    _numberData = numberData;
+-(void)setYLabels:(NSArray<NSNumber *> *)yLabels{
+    _yLabels = yLabels;
     [self setNeedsDisplay];
 }
 
--(void)setLabels:(NSArray *)labels{
-    _labels = labels;
+-(void)setXLabels:(NSArray<NSString *> *)xLabels{
+    _xLabels = xLabels;
     [self setNeedsDisplay];
 }
 
@@ -212,11 +228,6 @@
 
 - (void)setBarBackgroundColor:(UIColor *)barBackgroundColor{
     _barBackgroundColor = barBackgroundColor;
-    [self setNeedsDisplay];
-}
-
--(void)setMaxValue:(CGFloat)maxValue{
-    _maxValue = maxValue;
     [self setNeedsDisplay];
 }
 

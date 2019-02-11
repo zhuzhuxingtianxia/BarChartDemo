@@ -32,21 +32,16 @@
 }
 
 #pragma mark Setter
--(void)setLabels:(NSArray<NSString *> *)labels{
-    _labels = labels;
-    self.barChart.labels = _labels;
+-(void)setXLabels:(NSArray<NSString *> *)xLabels{
+    _xLabels = xLabels;
+    self.barChart.xLabels = _xLabels;
     
     [self loadItems];
 }
 
--(void)setNumberData:(NSArray<NSNumber *> *)numberData{
-    _numberData = numberData;
-    self.barChart.numberData = _numberData;
-}
-
--(void)setMaxValue:(CGFloat)maxValue{
-    _maxValue = maxValue;
-    self.barChart.maxValue = _maxValue;
+-(void)setYLabels:(NSArray<NSNumber *> *)yLabels{
+    _yLabels = yLabels;
+    self.barChart.yLabels = _yLabels;
 }
 
 
@@ -56,8 +51,8 @@
         [self.itemsArray removeAllObjects];
     }
     
-    for (NSInteger k = 0; k < self.labels.count; k ++) {
-        NSString *title = self.labels[k];
+    for (NSInteger k = 0; k < self.xLabels.count; k ++) {
+        NSString *title = self.xLabels[k];
         UIButton *item = [UIButton buttonWithType:UIButtonTypeCustom];
         [item setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         item.titleLabel.font = [UIFont systemFontOfSize:12.0];

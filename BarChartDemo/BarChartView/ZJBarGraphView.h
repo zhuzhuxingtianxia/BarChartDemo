@@ -10,10 +10,8 @@
 
 @interface ZJBarGraphView : UIView
 /** 柱状图数据源 */
-@property(nonatomic,strong)NSArray<NSNumber *> *numberData;
+@property(nonatomic,strong)NSArray<NSNumber *> *yLabels;
 /** 图格说明 */
-@property(nonatomic,strong)NSArray<NSString *> *labels;
-/** 最大值 默认为数据源中的最大值*/
-@property(nonatomic,assign)CGFloat  maxValue;
+@property(nonatomic,strong)NSArray<NSString *> *xLabels;
 
 @end
